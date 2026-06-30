@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Mi Banca</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+
+<nav class="hb-nav">
+    <div class="hb-nav-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+    </div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link active">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div>
+            <h1>Bienvenido, <span th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</span> 👋</h1>
+            <p>Aquí tienes un resumen de tu situación financiera</p>
+        </div>
+        <div class="saldo-total-badge">
+            <div class="saldo-label">Saldo Total</div>
+            <div class="saldo-amount">S/ <span th:text="${#numbers.formatDecimal(saldoTotal,1,'COMMA',2,'POINT')}">0.00</span></div>
+        </div>
+    </div>
+
+    <div th:if="${mensaje}" class="alert-hb success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert-hb error" th:text="${error}"></div>
+
+    <section class="hb-section">
+        <div class="section-header">
+            <h2>Mis Cuentas</h2>
+            <a href="/homebanking/cuentas" class="btn-link">Ver todas →</a>
+        </div>
+        <div class="cuentas-grid">
+            <div th:if="${#lists.isEmpty(cuentas)}" class="empty-card">
+                <p>No tienes cuentas aún.</p>
+                <a href="/homebanking/cuentas" class="btn-primary">Abrir una cuenta</a>
+            </div>
+            <div th:each="cuenta : ${cuentas}" class="cuenta-card"
+                 th:classappend="${cuenta.tipoCuenta == 'AHORRO'} ? 'blue' :
+                                (${cuenta.tipoCuenta == 'CORRIENTE'} ? 'dark' : 'orange')">
+                <div class="cuenta-type" th:text="${cuenta.tipoCuenta}"></div>
+                <div class="cuenta-number" th:text="${cuenta.numeroCuenta}"></div>
+                <div class="cuenta-saldo">
+                    <span class="saldo-moneda" th:text="${cuenta.moneda}">S/</span>
+                    <span class="saldo-valor" th:text="${#numbers.formatDecimal(cuenta.saldo,1,'COMMA',2,'POINT')}">0.00</span>
+                </div>
+                <div class="cuenta-actions">
+                    <a th:href="@{/homebanking/movimientos/{id}(id=${cuenta.id})}" class="btn-cuenta">Ver movimientos</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Últimos Movimientos</h2></div>
+        <div th:if="${#lists.isEmpty(ultimasTransacciones)}" class="empty-state-hb">
+            No hay movimientos registrados aún.
+        </div>
+        <div class="movimientos-list" th:unless="${#lists.isEmpty(ultimasTransacciones)}">
+            <div th:each="t : ${ultimasTransacciones}" class="movimiento-item">
+                <div class="mov-icon"
+                     th:text="${t.tipoTransaccion == 'DEPOSITO'} ? '↓' :
+                              (${t.tipoTransaccion == 'TRANSFERENCIA'} ? '↔' : '↑')">↔</div>
+                <div class="mov-info">
+                    <div class="mov-tipo" th:text="${t.tipoTransaccion}"></div>
+                    <div class="mov-desc" th:text="${t.descripcion ?: 'Sin descripción'}"></div>
+                    <div class="mov-fecha" th:text="${#temporals.format(t.fechaTransaccion,'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+                <div class="mov-monto"
+                     th:classappend="${t.tipoTransaccion == 'DEPOSITO'} ? 'positivo' : 'negativo'">
+                    <span th:text="${t.tipoTransaccion == 'DEPOSITO'} ? '+' : '-'"></span>
+                    S/ <span th:text="${#numbers.formatDecimal(t.monto,1,'COMMA',2,'POINT')}"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hb-section" th:unless="${#lists.isEmpty(creditos)}">
+        <div class="section-header">
+            <h2>Mis Créditos</h2>
+            <a href="/homebanking/creditos" class="btn-link">Ver todos →</a>
+        </div>
+        <div class="creditos-grid">
+            <div th:each="cred : ${creditos}" class="credito-card">
+                <div class="credito-header">
+                    <span class="credito-tipo" th:text="${cred.tipoCredito}"></span>
+                    <span class="credito-estado"
+                          th:classappend="${cred.estado == 'VIGENTE'} ? 'green' : 'red'"
+                          th:text="${cred.estado}"></span>
+                </div>
+                <div class="credito-monto">
+                    S/ <span th:text="${#numbers.formatDecimal(cred.saldoCapital,1,'COMMA',2,'POINT')}"></span>
+                    <span class="credito-label">saldo pendiente</span>
+                </div>
+                <div class="credito-cuota">
+                    Cuota mensual: <strong>S/ <span th:text="${#numbers.formatDecimal(cred.cuotaMensual,1,'COMMA',2,'POINT')}"></span></strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Acciones Rápidas</h2></div>
+        <div class="acciones-grid">
+            <a href="/homebanking/transferencias" class="accion-card">
+                <div class="accion-icon">💸</div>
+                <div class="accion-label">Transferir</div>
+            </a>
+            <a href="/homebanking/creditos/solicitar" class="accion-card">
+                <div class="accion-icon">📝</div>
+                <div class="accion-label">Solicitar Crédito</div>
+            </a>
+            <a href="/homebanking/cuentas" class="accion-card">
+                <div class="accion-icon">🏦</div>
+                <div class="accion-label">Mis Cuentas</div>
+            </a>
+            <a href="/homebanking/creditos" class="accion-card">
+                <div class="accion-icon">💳</div>
+                <div class="accion-label">Mis Créditos</div>
+            </a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

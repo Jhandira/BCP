@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Mis Cuentas</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+<nav class="hb-nav">
+    <div class="hb-nav-logo"><span class="bcp-text">BCP</span><span class="orange-dot">></span></div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link active">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div><h1>Mis Cuentas</h1><p>Gestiona tus cuentas bancarias</p></div>
+    </div>
+    <div th:if="${mensaje}" class="alert-hb success" th:text="${mensaje}"></div>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Abrir Nueva Cuenta</h2></div>
+        <form th:action="@{/homebanking/cuentas/abrir}" method="post" class="form-hb">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="form-row-hb">
+                <div class="form-group-hb">
+                    <label>Tipo de Cuenta</label>
+                    <select name="tipoCuenta" required>
+                        <option value="AHORRO">Cuenta de Ahorro (3.5% anual)</option>
+                        <option value="CORRIENTE">Cuenta Corriente</option>
+                        <option value="PLAZO_FIJO">Depósito a Plazo Fijo (6.0% anual)</option>
+                    </select>
+                </div>
+                <div class="form-group-hb">
+                    <label>Moneda</label>
+                    <select name="moneda" required>
+                        <option value="PEN">Soles (PEN)</option>
+                        <option value="USD">Dólares (USD)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Abrir Cuenta</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Mis Cuentas</h2></div>
+        <div th:if="${#lists.isEmpty(cuentas)}" class="empty-state-hb">No tienes cuentas aún.</div>
+        <div class="cuentas-grid" th:unless="${#lists.isEmpty(cuentas)}">
+            <div th:each="cuenta : ${cuentas}" class="cuenta-card"
+                 th:classappend="${cuenta.tipoCuenta == 'AHORRO'} ? 'blue' :
+                                (${cuenta.tipoCuenta == 'CORRIENTE'} ? 'dark' : 'orange')">
+                <div class="cuenta-type" th:text="${cuenta.tipoCuenta}"></div>
+                <div class="cuenta-number" th:text="${cuenta.numeroCuenta}"></div>
+                <div class="cuenta-saldo">
+                    <span class="saldo-moneda" th:text="${cuenta.moneda}"></span>
+                    <span class="saldo-valor" th:text="${#numbers.formatDecimal(cuenta.saldo,1,'COMMA',2,'POINT')}">0.00</span>
+                </div>
+                <div class="cuenta-info">
+                    Tasa: <span th:text="${cuenta.tasaInteresAnual}">0</span>% anual |
+                    Estado: <span th:text="${cuenta.estado}"></span>
+                </div>
+                <a th:href="@{/homebanking/movimientos/{id}(id=${cuenta.id})}" class="btn-cuenta">Ver movimientos</a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

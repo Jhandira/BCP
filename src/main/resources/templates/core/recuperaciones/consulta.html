@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP Core - Recuperaciones</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link rel="stylesheet" th:href="@{/css/mora.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body class="core-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/core/solicitudes" class="nav-item">📋 Solicitudes</a>
+        <a href="/core/creditos" class="nav-item">💳 Créditos</a>
+        <a href="/core/clientes" class="nav-item">👥 Clientes</a>
+        <a href="/core/recuperaciones" class="nav-item active">⚠️ Recuperaciones</a>
+        <a href="/core/reportes" class="nav-item">📈 Reportes</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">F</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Funcionario</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Cargo</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>⚠️ Módulo de Recuperaciones</h1>
+            <p>Gestión de cartera morosa — Bandas R1 · Gestiones R2 · Transiciones R3</p>
+        </div>
+    </div>
+
+    <!-- KPIs de mora -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon blue">💳</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${kpis.totalCreditos()}">0</div>
+                <div class="kpi-label">Total Créditos</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon red">⚠️</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${kpis.enMora()}">0</div>
+                <div class="kpi-label">En Mora</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon orange">📊</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${#numbers.formatDecimal(kpis.porcentajeMora(),1,'COMMA',1,'POINT')} + '%'">0%</div>
+                <div class="kpi-label">% Mora (ref. BCP: 3.1%)</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon yellow">⚖️</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${kpis.judicial() + kpis.castigo()}">0</div>
+                <div class="kpi-label">Judicial / Castigo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Semáforo de bandas -->
+    <div class="bandas-grid">
+
+        <!-- PREVENTIVA -->
+        <div class="banda-card preventiva">
+            <div class="banda-header">
+                <div class="semaforo yellow"></div>
+                <div>
+                    <div class="banda-nombre">PREVENTIVA</div>
+                    <div class="banda-rango">1 — 8 días</div>
+                </div>
+                <div class="banda-count" th:text="${kpis.preventiva()}">0</div>
+            </div>
+            <div th:if="${#lists.isEmpty(preventiva)}" class="banda-empty">Sin créditos en esta banda</div>
+            <table th:unless="${#lists.isEmpty(preventiva)}" class="banda-table">
+                <thead><tr><th>N° Crédito</th><th>Cliente</th><th>Días</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${preventiva}">
+                    <td th:text="${c.numeroCredito}"></td>
+                    <td th:text="${c.cliente.nombreCompleto}"></td>
+                    <td><span class="dias-badge yellow" th:text="${c.diasAtraso} + ' días'"></span></td>
+                    <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                    <td><a th:href="@{/core/recuperaciones/credito/{id}(id=${c.id})}" class="btn-gestionar">Gestionar</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TEMPRANA -->
+        <div class="banda-card temprana">
+            <div class="banda-header">
+                <div class="semaforo orange"></div>
+                <div>
+                    <div class="banda-nombre">TEMPRANA</div>
+                    <div class="banda-rango">9 — 30 días</div>
+                </div>
+                <div class="banda-count" th:text="${kpis.temprana()}">0</div>
+            </div>
+            <div th:if="${#lists.isEmpty(temprana)}" class="banda-empty">Sin créditos en esta banda</div>
+            <table th:unless="${#lists.isEmpty(temprana)}" class="banda-table">
+                <thead><tr><th>N° Crédito</th><th>Cliente</th><th>Días</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${temprana}">
+                    <td th:text="${c.numeroCredito}"></td>
+                    <td th:text="${c.cliente.nombreCompleto}"></td>
+                    <td><span class="dias-badge orange" th:text="${c.diasAtraso} + ' días'"></span></td>
+                    <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                    <td><a th:href="@{/core/recuperaciones/credito/{id}(id=${c.id})}" class="btn-gestionar">Gestionar</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TARDÍA -->
+        <div class="banda-card tardia">
+            <div class="banda-header">
+                <div class="semaforo red"></div>
+                <div>
+                    <div class="banda-nombre">TARDÍA</div>
+                    <div class="banda-rango">31 — 60 días</div>
+                </div>
+                <div class="banda-count" th:text="${kpis.tardia()}">0</div>
+            </div>
+            <div th:if="${#lists.isEmpty(tardia)}" class="banda-empty">Sin créditos en esta banda</div>
+            <table th:unless="${#lists.isEmpty(tardia)}" class="banda-table">
+                <thead><tr><th>N° Crédito</th><th>Cliente</th><th>Días</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${tardia}">
+                    <td th:text="${c.numeroCredito}"></td>
+                    <td th:text="${c.cliente.nombreCompleto}"></td>
+                    <td><span class="dias-badge red" th:text="${c.diasAtraso} + ' días'"></span></td>
+                    <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                    <td><a th:href="@{/core/recuperaciones/credito/{id}(id=${c.id})}" class="btn-gestionar">Gestionar</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- JUDICIAL / PRE-CASTIGO -->
+        <div class="banda-card judicial">
+            <div class="banda-header">
+                <div class="semaforo darkred"></div>
+                <div>
+                    <div class="banda-nombre">JUDICIAL</div>
+                    <div class="banda-rango">61 — 180 días</div>
+                </div>
+                <div class="banda-count" th:text="${kpis.judicial()}">0</div>
+            </div>
+            <div th:if="${#lists.isEmpty(judicial)}" class="banda-empty">Sin créditos en esta banda</div>
+            <table th:unless="${#lists.isEmpty(judicial)}" class="banda-table">
+                <thead><tr><th>N° Crédito</th><th>Cliente</th><th>Días</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${judicial}">
+                    <td th:text="${c.numeroCredito}"></td>
+                    <td th:text="${c.cliente.nombreCompleto}"></td>
+                    <td><span class="dias-badge darkred" th:text="${c.diasAtraso} + ' días'"></span></td>
+                    <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                    <td><a th:href="@{/core/recuperaciones/credito/{id}(id=${c.id})}" class="btn-gestionar">Gestionar</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- CASTIGO -->
+        <div class="banda-card castigo" th:unless="${#lists.isEmpty(castigo)}">
+            <div class="banda-header">
+                <div class="semaforo black"></div>
+                <div>
+                    <div class="banda-nombre">CASTIGO</div>
+                    <div class="banda-rango">> 180 días</div>
+                </div>
+                <div class="banda-count" th:text="${kpis.castigo()}">0</div>
+            </div>
+            <table class="banda-table">
+                <thead><tr><th>N° Crédito</th><th>Cliente</th><th>Días</th><th>Saldo</th><th>Acción</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${castigo}">
+                    <td th:text="${c.numeroCredito}"></td>
+                    <td th:text="${c.cliente.nombreCompleto}"></td>
+                    <td><span class="dias-badge black" th:text="${c.diasAtraso} + ' días'"></span></td>
+                    <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                    <td><a th:href="@{/core/recuperaciones/credito/{id}(id=${c.id})}" class="btn-gestionar">Ver</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

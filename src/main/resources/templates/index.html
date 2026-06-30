@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCP - En tus planes, siempre</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="top-gradient-bar">
+    <span>Tu próxima tarjeta preaprobada está a un clic. Averigua aquí. ➔</span>
+</div>
+
+<nav class="top-nav">
+    <div class="container">
+        <div class="segments">
+            <a href="#" class="active">Personas</a>
+            <a href="#">PyMES</a>
+            <a href="#">Empresas</a>
+        </div>
+        <div class="lang">Español / Quechua</div>
+    </div>
+</nav>
+
+<nav class="main-nav">
+    <div class="container nav-flex">
+        <div class="logo">
+            <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        </div>
+        <ul class="menu-links">
+            <li>Productos ▾</li>
+            <li>Soluciones Digitales ▾</li>
+            <li>Beneficios ▾</li>
+            <li>Ayuda y Educación ▾</li>
+        </ul>
+        <div class="nav-buttons">
+            <button class="btn-search">🔍 Buscar</button>
+            <button class="btn-outline">Abrir cuenta</button>
+            <button class="btn-banca">Banca por Internet</button>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-text">
+            <h1>Ahorra hoy y disfruta tu depa mañana</h1>
+            <p>Cada 100 soles adicionales es una opción para participar</p>
+            <button class="btn-hero">Regístrate aquí</button>
+        </div>
+        <div class="orange-curve">
+            <img src="/images/cuy.png" alt="Cuy BCP" class="cuy-img">
+        </div>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container grid-layout">
+
+        <div class="quick-actions">
+            <h2>¿Qué necesitas hacer hoy?</h2>
+            <div class="actions-grid">
+                <div class="action-card">
+                    <span class="badge">Sorteo</span>
+                    <div class="icon">🏦</div>
+                    <p>Abre una cuenta</p>
+                </div>
+                <div class="action-card">
+                    <div class="icon">💳</div>
+                    <p>Obtener una Tarjeta</p>
+                </div>
+                <div class="action-card">
+                    <div class="icon">💰</div>
+                    <p>Solicitar un Préstamo</p>
+                </div>
+                <div class="action-card">
+                    <div class="icon">💵</div>
+                    <p>Adelantar mi Sueldo</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pre-approved-box">
+            <span class="tag">Mi Espacio BCP</span>
+            <h3>¡Conoce tus productos preaprobados!</h3>
+            <ul>
+                <li>✓ Solo con tu número de documento</li>
+                <li>✓ Para clientes y no clientes BCP</li>
+            </ul>
+            <div class="form-row">
+                <select><option>DNI</option></select>
+                <input type="text" placeholder="Nro Documento">
+                <button>Conocer</button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="floating-chat">💬</div>
+
+</body>
+</html>

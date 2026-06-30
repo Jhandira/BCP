@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP Core - Solicitudes</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="core-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/core/solicitudes" class="nav-item active">📋 Solicitudes</a>
+        <a href="/core/creditos" class="nav-item">💳 Créditos</a>
+        <a href="/core/clientes" class="nav-item">👥 Clientes</a>
+        <a href="/core/reportes" class="nav-item">📈 Reportes</a>
+        <a href="/core/recuperaciones" class="nav-item">⚠️ Recuperaciones</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">F</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Funcionario</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Cargo</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>Solicitudes de Crédito</h1>
+            <p>Gestión del flujo de aprobación crediticia</p>
+        </div>
+    </div>
+
+    <div th:if="${mensaje}" class="alert-success" th:text="${mensaje}"></div>
+
+    <div class="table-section">
+        <div th:if="${#lists.isEmpty(solicitudes)}" class="empty-state">
+            No hay solicitudes registradas aún.
+        </div>
+
+        <table th:unless="${#lists.isEmpty(solicitudes)}" class="core-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>DNI</th>
+                <th>Tipo Crédito</th>
+                <th>Monto</th>
+                <th>Plazo</th>
+                <th>Scoring</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sol : ${solicitudes}">
+                <td th:text="${sol.id}"></td>
+                <td th:text="${sol.cliente.nombreCompleto}"></td>
+                <td th:text="${sol.cliente.dni}"></td>
+                <td><span class="badge-tipo" th:text="${sol.tipoCredito}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(sol.montoSolicitado,1,'COMMA',2,'POINT')}"></span></td>
+                <td th:text="${sol.plazoMeses} + ' meses'"></td>
+                <td>
+                        <span class="scoring-badge"
+                              th:classappend="${sol.scoringClasificacion == 'EXCELENTE'} ? 'green' :
+                                             (${sol.scoringClasificacion == 'BUENO'} ? 'blue' :
+                                             (${sol.scoringClasificacion == 'REGULAR'} ? 'yellow' : 'red'))"
+                              th:text="${sol.scoringPuntaje != null ? sol.scoringPuntaje : 'N/A'}">
+                        </span>
+                </td>
+                <td>
+                        <span class="estado-badge"
+                              th:classappend="${sol.estado == 'APROBADO'} ? 'green' :
+                                             (${sol.estado == 'RECHAZADO'} ? 'red' :
+                                             (${sol.estado == 'PENDIENTE'} ? 'yellow' : 'blue'))"
+                              th:text="${sol.estado}">
+                        </span>
+                </td>
+                <td th:text="${#temporals.format(sol.fechaSolicitud,'dd/MM/yyyy')}"></td>
+                <td>
+                    <a th:href="@{/core/solicitudes/{id}(id=${sol.id})}" class="btn-revisar"
+                       th:if="${sol.estado == 'PENDIENTE'}">Revisar</a>
+                    <span th:unless="${sol.estado == 'PENDIENTE'}" class="text-gray">Procesado</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

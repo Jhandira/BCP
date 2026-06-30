@@ -1,0 +1,170 @@
+/* ============================================
+   login-core.css — Login Core Financiero BCP
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.core-login-body {
+    font-family: 'Nunito', sans-serif;
+    background: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header ── */
+.core-login-header {
+    background: #003087;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #f97316;
+}
+
+.core-brand { display: flex; align-items: center; gap: 8px; }
+.bcp-text { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.orange-dot { font-size: 28px; color: #f97316; font-weight: 900; }
+.core-title {
+    font-size: 16px; font-weight: 700;
+    color: rgba(255,255,255,.8);
+    margin-left: 8px; padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,.3);
+}
+.core-header-info { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 600; }
+
+/* ── Body content ── */
+.core-login-body-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 48px 40px;
+}
+
+/* ── Panel izquierdo ── */
+.core-login-left { max-width: 320px; }
+
+.core-info-card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.core-info-icon { font-size: 48px; margin-bottom: 12px; }
+.core-info-card h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.core-info-card p { font-size: 13px; color: rgba(255,255,255,.6); line-height: 1.5; }
+
+.core-modules { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.core-module-item {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,.75);
+}
+
+.core-roles { display: flex; gap: 8px; flex-wrap: wrap; }
+.core-role-badge {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+}
+.core-role-badge.asesor  { background: #dbeafe; color: #1d4ed8; }
+.core-role-badge.comite  { background: #fef9c3; color: #ca8a04; }
+.core-role-badge.admin   { background: #ffedd5; color: #ea580c; }
+.core-role-badge.gerente { background: #dcfce7; color: #16a34a; }
+
+/* ── Panel derecho ── */
+.core-login-right { width: 400px; }
+
+.core-login-card {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.core-login-icon { font-size: 40px; text-align: center; margin-bottom: 16px; }
+.core-login-card h2 {
+    font-size: 24px; font-weight: 900; color: #fff;
+    text-align: center; margin-bottom: 6px;
+}
+.core-login-subtitle {
+    font-size: 13px; color: rgba(255,255,255,.5);
+    text-align: center; margin-bottom: 24px;
+}
+
+/* ── Alertas ── */
+.core-alert {
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; margin-bottom: 16px;
+}
+.core-alert.error   { background: #450a0a; border: 1px solid #dc2626; color: #fca5a5; }
+.core-alert.success { background: #052e16; border: 1px solid #16a34a; color: #86efac; }
+
+/* ── Formulario ── */
+.core-login-form { display: flex; flex-direction: column; gap: 16px; }
+
+.core-form-group { display: flex; flex-direction: column; gap: 6px; }
+.core-form-group label {
+    font-size: 12px; font-weight: 700;
+    color: rgba(255,255,255,.7);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.core-form-group input {
+    padding: 12px 14px;
+    background: #0f172a;
+    border: 1.5px solid rgba(255,255,255,.15);
+    border-radius: 10px;
+    font-size: 14px; font-family: inherit; color: #fff;
+    outline: none; transition: border-color .2s;
+}
+.core-form-group input:focus { border-color: #f97316; }
+.core-form-group input::placeholder { color: rgba(255,255,255,.3); }
+
+.password-wrapper { position: relative; }
+.password-wrapper input { width: 100%; padding-right: 44px; }
+.password-wrapper button {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; opacity: .5; transition: opacity .2s;
+}
+.password-wrapper button:hover { opacity: 1; }
+
+/* ── Botón ── */
+.core-btn-login {
+    width: 100%; padding: 13px;
+    background: #f97316; color: #fff; border: none;
+    border-radius: 10px; font-size: 14px; font-weight: 800;
+    font-family: inherit; cursor: pointer; margin-top: 4px;
+    transition: background .2s, transform .15s;
+    box-shadow: 0 4px 16px rgba(249,115,22,.4);
+}
+.core-btn-login:hover { background: #ea6000; transform: translateY(-1px); }
+
+/* ── Footer ── */
+.core-login-footer {
+    text-align: center; margin-top: 20px;
+    font-size: 13px; color: rgba(255,255,255,.4);
+}
+.core-login-footer a { color: #f97316; font-weight: 700; text-decoration: none; margin-left: 4px; }
+
+.core-security-notice {
+    text-align: center; margin-top: 16px;
+    font-size: 11px; color: rgba(255,255,255,.3); font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .core-login-left { display: none; }
+    .core-login-body-content { padding: 24px 16px; }
+    .core-login-right { width: 100%; max-width: 400px; }
+}

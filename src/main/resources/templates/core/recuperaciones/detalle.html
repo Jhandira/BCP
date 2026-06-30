@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP Core - Gestión de Cobranza</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link rel="stylesheet" th:href="@{/css/mora.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="core-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/core/solicitudes" class="nav-item">📋 Solicitudes</a>
+        <a href="/core/creditos" class="nav-item">💳 Créditos</a>
+        <a href="/core/clientes" class="nav-item">👥 Clientes</a>
+        <a href="/core/recuperaciones" class="nav-item active">⚠️ Recuperaciones</a>
+        <a href="/core/reportes" class="nav-item">📈 Reportes</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">F</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Funcionario</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Cargo</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>Gestión de Cobranza</h1>
+            <p th:text="${credito.numeroCredito}"></p>
+        </div>
+        <a href="/core/recuperaciones" class="btn-back">← Volver</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert-error-box" th:text="${error}"></div>
+
+    <div class="detail-grid">
+
+        <!-- Info del crédito -->
+        <div class="detail-card">
+            <h3>💳 Datos del Crédito</h3>
+            <div class="detail-row">
+                <span class="detail-label">Cliente</span>
+                <span class="detail-value" th:text="${credito.cliente.nombreCompleto}"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">DNI</span>
+                <span class="detail-value" th:text="${credito.cliente.dni}"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Tipo Crédito</span>
+                <span class="badge-tipo" th:text="${credito.tipoCredito}"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Monto Aprobado</span>
+                <span class="detail-value">S/ <span th:text="${#numbers.formatDecimal(credito.montoAprobado,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Saldo Capital</span>
+                <span class="detail-value highlight">S/ <span th:text="${#numbers.formatDecimal(credito.saldoCapital,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Cuota Mensual</span>
+                <span class="detail-value">S/ <span th:text="${#numbers.formatDecimal(credito.cuotaMensual,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+        </div>
+
+        <!-- Semáforo de mora -->
+        <div class="detail-card mora-semaforo-card">
+            <h3>🚦 Estado de Mora</h3>
+            <div class="semaforo-display">
+                <div class="semaforo-grande"
+                     th:classappend="${colorBanda}">
+                    <span th:text="${credito.diasAtraso}">0</span>
+                    <small>días</small>
+                </div>
+                <div class="semaforo-info">
+                    <div class="banda-tag"
+                         th:classappend="${colorBanda}"
+                         th:text="${banda}">NORMAL</div>
+                    <div class="mora-monto">
+                        Mora acumulada: <strong>S/ <span th:text="${#numbers.formatDecimal(montoMora,1,'COMMA',2,'POINT')}"></span></strong>
+                    </div>
+                    <div class="mora-estado">
+                        Estado: <strong th:text="${credito.estado}"></strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- R3: Acciones de transición -->
+            <div class="transicion-actions">
+                <form th:if="${puedeDerivarse}"
+                      th:action="@{/core/recuperaciones/credito/{id}/judicial(id=${credito.id})}"
+                      method="post" style="display:inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn-judicial"
+                            onclick="return confirm('¿Derivar a cobranza judicial?')">
+                        ⚖️ Derivar a Judicial
+                    </button>
+                </form>
+
+                <form th:if="${puedeCastigarse}"
+                      th:action="@{/core/recuperaciones/credito/{id}/castigar(id=${credito.id})}"
+                      method="post" style="display:inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn-castigo"
+                            onclick="return confirm('¿Castigar este crédito contablemente? Esta acción no se puede revertir.')">
+                        🗑️ Castigar Crédito
+                    </button>
+                </form>
+
+                <div th:unless="${puedeDerivarse or puedeCastigarse}" class="sin-acciones">
+                    <span th:if="${credito.diasAtraso < 61}">Sin acciones de transición disponibles (requiere 61+ días)</span>
+                    <span th:if="${credito.diasAtraso >= 61 and credito.estado == 'JUDICIAL'}">✅ Ya derivado a judicial</span>
+                    <span th:if="${credito.estado == 'CASTIGADO'}">✅ Ya castigado</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- R2: Registrar gestión -->
+    <div class="action-section">
+        <h3>📝 Registrar Gestión de Cobranza</h3>
+        <form th:action="@{/core/recuperaciones/credito/{id}/gestion(id=${credito.id})}"
+              method="post" class="gestion-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="gestion-form-grid">
+                <div class="form-group">
+                    <label>Tipo de Gestión</label>
+                    <select name="tipoGestion" required>
+                        <option value="LLAMADA_TELEFONICA">📞 Llamada Telefónica</option>
+                        <option value="VISITA_DOMICILIO">🏠 Visita a Domicilio</option>
+                        <option value="CARTA_NOTARIAL">✉️ Carta Notarial</option>
+                        <option value="ACUERDO_PAGO">🤝 Acuerdo de Pago</option>
+                        <option value="EMAIL">📧 Email</option>
+                        <option value="MENSAJE_SMS">💬 Mensaje SMS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Resultado</label>
+                    <select name="resultado" required>
+                        <option value="CONTACTADO">✅ Contactado</option>
+                        <option value="NO_CONTACTADO">❌ No Contactado</option>
+                        <option value="PROMESA_PAGO">🤝 Promesa de Pago</option>
+                        <option value="SIN_RESPUESTA">📵 Sin Respuesta</option>
+                        <option value="PAGO_REALIZADO">💰 Pago Realizado</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2">
+                    <label>Descripción / Observaciones</label>
+                    <textarea name="descripcion" required
+                              placeholder="Describe el resultado de la gestión..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-aprobar">✅ Registrar Gestión</button>
+        </form>
+    </div>
+
+    <!-- R2: Historial de gestiones -->
+    <div class="table-section">
+        <div class="table-header">
+            <h2>📋 Historial de Gestiones</h2>
+        </div>
+        <div th:if="${#lists.isEmpty(gestiones)}" class="empty-state">
+            No hay gestiones registradas para este crédito.
+        </div>
+        <table th:unless="${#lists.isEmpty(gestiones)}" class="core-table">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Resultado</th>
+                <th>Descripción</th>
+                <th>Funcionario</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="g : ${gestiones}">
+                <td th:text="${#temporals.format(g.fechaGestion,'dd/MM/yyyy HH:mm')}"></td>
+                <td><span class="badge-tipo" th:text="${g.tipoGestion}"></span></td>
+                <td>
+                        <span class="resultado-badge"
+                              th:classappend="${g.resultado == 'CONTACTADO' or g.resultado == 'PAGO_REALIZADO'} ? 'green' :
+                                             (${g.resultado == 'PROMESA_PAGO'} ? 'yellow' : 'red')"
+                              th:text="${g.resultado}">
+                        </span>
+                </td>
+                <td th:text="${g.descripcion}"></td>
+                <td th:text="${g.funcionario?.nombreCompleto ?: 'Sistema'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

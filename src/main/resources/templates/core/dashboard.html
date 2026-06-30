@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCP Core - Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="core-body">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item active">
+            <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="/core/solicitudes" class="nav-item">
+            <span class="nav-icon">📋</span> Solicitudes
+        </a>
+        <a href="/core/creditos" class="nav-item">
+            <span class="nav-icon">💳</span> Créditos
+        </a>
+        <a href="/core/clientes" class="nav-item">
+            <span class="nav-icon">👥</span> Clientes
+        </a>
+        <a href="/core/reportes" class="nav-item">
+            <span class="nav-icon">📈</span> Reportes
+        </a>
+        <a href="/core/recuperaciones" class="nav-item">
+            <span class="nav-icon">⚠️</span> Recuperaciones
+        </a>
+
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">G</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Gerente</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Gerente General</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<!-- Contenido principal -->
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>Dashboard Principal</h1>
+            <p>Resumen ejecutivo del sistema financiero BCP</p>
+        </div>
+        <div class="header-date" id="fecha"></div>
+    </div>
+
+    <!-- Mensaje flash -->
+    <div th:if="${mensaje}" class="alert-success" th:text="${mensaje}"></div>
+
+    <!-- KPIs principales -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon blue">👥</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${totalClientes}">0</div>
+                <div class="kpi-label">Total Clientes</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon orange">💳</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${totalCreditos}">0</div>
+                <div class="kpi-label">Créditos Activos</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon yellow">📋</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${solicitudesPendientes}">0</div>
+                <div class="kpi-label">Solicitudes Pendientes</div>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon red">⚠️</div>
+            <div class="kpi-info">
+                <div class="kpi-value" th:text="${creditosAtrasados}">0</div>
+                <div class="kpi-label">Créditos en Mora</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicadores BCP -->
+    <div class="indicators-grid">
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <h3>Cartera Total</h3>
+                <span class="indicator-badge green">Activo</span>
+            </div>
+            <div class="indicator-value">
+                S/ <span th:text="${#numbers.formatDecimal(carteraTotal, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+            </div>
+            <div class="indicator-desc">Saldo capital total de créditos vigentes</div>
+        </div>
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <h3>Ratio de Mora</h3>
+                <span class="indicator-badge" th:classappend="${#strings.equals(ratioMora,'0.00')} ? 'green' : 'red'">
+                    Cartera Problema
+                </span>
+            </div>
+            <div class="indicator-value">
+                <span th:text="${ratioMora}">0.00</span>%
+            </div>
+            <div class="indicator-desc">Cartera atrasada / Colocaciones brutas (BCP dic-25: 3.1%)</div>
+        </div>
+    </div>
+
+    <!-- Solicitudes pendientes -->
+    <div class="table-section">
+        <div class="table-header">
+            <h2>Solicitudes Pendientes de Revisión</h2>
+            <a href="/core/solicitudes" class="btn-ver-todas">Ver todas →</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(solicitudes)}" class="empty-state">
+            No hay solicitudes pendientes en este momento.
+        </div>
+
+        <table th:unless="${#lists.isEmpty(solicitudes)}" class="core-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Scoring</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sol : ${solicitudes}">
+                <td th:text="${sol.id}"></td>
+                <td th:text="${sol.cliente.nombreCompleto}"></td>
+                <td><span class="badge-tipo" th:text="${sol.tipoCredito}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(sol.montoSolicitado,1,'COMMA',2,'POINT')}"></span></td>
+                <td>
+                        <span class="scoring-badge"
+                              th:classappend="${sol.scoringClasificacion == 'EXCELENTE'} ? 'green' :
+                                             (${sol.scoringClasificacion == 'BUENO'} ? 'blue' :
+                                             (${sol.scoringClasificacion == 'REGULAR'} ? 'yellow' : 'red'))"
+                              th:text="${sol.scoringPuntaje != null ? sol.scoringPuntaje + ' - ' + sol.scoringClasificacion : 'N/A'}">
+                        </span>
+                </td>
+                <td th:text="${#temporals.format(sol.fechaSolicitud,'dd/MM/yyyy')}"></td>
+                <td>
+                    <a th:href="@{/core/solicitudes/{id}(id=${sol.id})}" class="btn-revisar">Revisar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    document.getElementById('fecha').textContent = new Date().toLocaleDateString('es-PE',
+        {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+</script>
+</body>
+</html>

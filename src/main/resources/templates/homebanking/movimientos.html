@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Movimientos</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+<nav class="hb-nav">
+    <div class="hb-nav-logo"><span class="bcp-text">BCP</span><span class="orange-dot">></span></div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link active">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div>
+            <h1>Movimientos</h1>
+            <p th:text="${cuenta.tipoCuenta} + ' · ' + ${cuenta.numeroCuenta}"></p>
+        </div>
+        <a href="/homebanking/cuentas" class="btn-back-hb">← Volver</a>
+    </div>
+
+    <section class="hb-section">
+        <div class="cuenta-resumen">
+            <div class="resumen-item">
+                <span class="resumen-label">Saldo Disponible</span>
+                <span class="resumen-value">
+                    <span th:text="${cuenta.moneda}">S/</span>
+                    <strong th:text="${#numbers.formatDecimal(cuenta.saldo,1,'COMMA',2,'POINT')}">0.00</strong>
+                </span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">Tasa Interés Anual</span>
+                <span class="resumen-value" th:text="${cuenta.tasaInteresAnual} + '%'">0%</span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">Estado</span>
+                <span class="resumen-value" th:text="${cuenta.estado}">ACTIVA</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Historial de Movimientos</h2></div>
+        <div th:if="${#lists.isEmpty(movimientos)}" class="empty-state-hb">
+            No hay movimientos registrados en esta cuenta.
+        </div>
+        <div class="movimientos-list" th:unless="${#lists.isEmpty(movimientos)}">
+            <div th:each="t : ${movimientos}" class="movimiento-item">
+                <div class="mov-icon"
+                     th:classappend="${t.tipoTransaccion == 'DEPOSITO'} ? 'positivo' : 'negativo'"
+                     th:text="${t.tipoTransaccion == 'DEPOSITO'} ? '↓' :
+                              (${t.tipoTransaccion == 'TRANSFERENCIA'} ? '↔' : '↑')">↔</div>
+                <div class="mov-info">
+                    <div class="mov-tipo" th:text="${t.tipoTransaccion}"></div>
+                    <div class="mov-desc" th:text="${t.descripcion ?: 'Sin descripción'}"></div>
+                    <div class="mov-fecha" th:text="${#temporals.format(t.fechaTransaccion,'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+                <div class="mov-monto"
+                     th:classappend="${t.tipoTransaccion == 'DEPOSITO'} ? 'positivo' : 'negativo'">
+                    <span th:text="${t.tipoTransaccion == 'DEPOSITO'} ? '+' : '-'"></span>
+                    S/ <span th:text="${#numbers.formatDecimal(t.monto,1,'COMMA',2,'POINT')}"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

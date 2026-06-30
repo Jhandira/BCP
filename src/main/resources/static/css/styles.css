@@ -1,0 +1,609 @@
+/* ============================================
+   BCP - style.css  |  Rediseño fiel a imagen
+   ============================================ */
+
+/* Google Font más cercana a la tipografía BCP */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ── Variables ─────────────────────────────── */
+:root {
+    --blue-bcp:    #003087;   /* azul oscuro principal */
+    --blue-mid:    #1a4da1;   /* azul íconos/tags */
+    --blue-light:  #e8f0f7;   /* fondo claro */
+    --orange-bcp:  #f97316;   /* naranja botones/CTA */
+    --white:       #ffffff;
+    --text-dark:   #1a2e5a;
+    --text-gray:   #6b7280;
+    --border:      #d1dce8;
+    --shadow:      0 4px 20px rgba(0, 48, 135, 0.08);
+    --radius-pill: 50px;
+    --radius-card: 14px;
+}
+
+/* ── Reset base ────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    background: var(--white);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ══════════════════════════════════════════════
+   BARRA SUPERIOR (degradado azul-magenta)
+   ══════════════════════════════════════════════ */
+.top-gradient-bar {
+    background: linear-gradient(90deg, #002ca5 0%, #c2006e 100%);
+    color: #fff;
+    text-align: center;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+}
+
+.top-gradient-bar:hover { opacity: 0.93; }
+
+/* ══════════════════════════════════════════════
+   NAV DE SEGMENTOS (Personas / PyMES / Empresas)
+   ══════════════════════════════════════════════ */
+.top-nav {
+    background: #f5f8fb;
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+}
+
+.top-nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 42px;
+}
+
+.segments { display: flex; gap: 0; }
+
+.segments a {
+    display: inline-flex;
+    align-items: center;
+    height: 42px;
+    padding: 0 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-gray);
+    border-bottom: 3px solid transparent;
+    transition: color .2s, border-color .2s;
+}
+
+.segments a:hover { color: var(--blue-bcp); }
+
+.segments a.active {
+    color: var(--blue-bcp);
+    border-bottom-color: var(--orange-bcp);
+}
+
+.lang {
+    font-size: 12.5px;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════
+   NAV PRINCIPAL
+   ══════════════════════════════════════════════ */
+.main-nav {
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,48,135,.07);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    gap: 16px;
+}
+
+/* Logo */
+.logo { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.bcp-text {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--blue-bcp);
+    letter-spacing: -1px;
+}
+.orange-dot {
+    font-size: 30px;
+    color: var(--orange-bcp);
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Menú links */
+.menu-links {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+}
+
+.menu-links li {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .2s, color .2s;
+}
+
+.menu-links li:hover {
+    background: var(--blue-light);
+    color: var(--blue-bcp);
+}
+
+/* Botones nav */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.btn-search {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background .2s;
+    font-family: inherit;
+}
+.btn-search:hover { background: var(--blue-light); }
+
+.btn-outline {
+    background: none;
+    border: 2px solid var(--blue-bcp);
+    color: var(--blue-bcp);
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s, color .2s;
+}
+.btn-outline:hover {
+    background: var(--blue-bcp);
+    color: #fff;
+}
+
+.btn-banca {
+    background: var(--orange-bcp);
+    color: #fff;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 12px rgba(249,115,22,.35);
+    transition: transform .15s, box-shadow .15s, background .2s;
+}
+.btn-banca:hover {
+    background: #ea6000;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(249,115,22,.45);
+}
+
+/* ══════════════════════════════════════════════
+   HERO BANNER  (fondo azul claro + curva naranja)
+   ══════════════════════════════════════════════ */
+.hero {
+    background-color: var(--blue-light);
+    height: 340px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-text {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.hero-text h1 {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--blue-bcp);
+    line-height: 1.15;
+}
+
+.hero-text p {
+    font-size: 15px;
+    color: #4a5f80;
+    font-weight: 600;
+}
+
+.btn-hero {
+    background: var(--orange-bcp);
+    color: #fff;
+    border: none;
+    width: fit-content;
+    padding: 12px 32px;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    margin-top: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 14px rgba(249,115,22,.4);
+    transition: transform .15s, box-shadow .15s;
+}
+.btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249,115,22,.5);
+}
+
+/* Curva naranja derecha */
+.orange-curve {
+    position: absolute;
+    right: -8%;
+    top: -10%;
+    width: 54%;
+    height: 130%;
+    background: var(--orange-bcp);
+    border-radius: 50% 0 0 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.cuy-placeholder {
+    color: rgba(255,255,255,.7);
+    font-size: 15px;
+    font-weight: 700;
+    transform: rotate(-5deg);
+}
+
+/* ══════════════════════════════════════════════
+   SECCIÓN CONTENIDO  (grid principal)
+   ══════════════════════════════════════════════ */
+.content-section {
+    background: var(--white);
+    padding: 0 0 60px;
+}
+
+/* CORRECCIÓN CLAVE: grid que coincide con el diseño */
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    padding: 50px 0;
+    align-items: start;
+}
+
+/* ── Acciones rápidas ── */
+.quick-actions h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--blue-bcp);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.action-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 22px 12px 18px;
+    text-align: center;
+    position: relative;
+    background: var(--white);
+    cursor: pointer;
+    transition: box-shadow .2s, border-color .2s, transform .2s;
+}
+
+.action-card:hover {
+    border-color: #93b4e0;
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+}
+
+/* ícono dentro de la card: círculo azul claro */
+.action-card .icon {
+    width: 52px;
+    height: 52px;
+    background: var(--blue-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 10px;
+    color: var(--blue-bcp);
+}
+
+.action-card p {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.3;
+}
+
+/* Badge "Sorteo" */
+.badge {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blue-mid);
+    color: #fff;
+    padding: 2px 10px;
+    font-size: 10.5px;
+    font-weight: 800;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* ── Caja de productos preaprobados ── */
+.pre-approved-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    padding: 28px 26px;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0,48,135,.1);
+    position: relative;
+}
+
+/* Tag "Mi Espacio BCP" en la esquina superior derecha */
+.pre-approved-box .tag {
+    position: absolute;
+    top: -14px;
+    right: 20px;
+    background: var(--blue-mid);
+    color: #fff;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+}
+
+.pre-approved-box h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--blue-bcp);
+    margin: 10px 0 16px;
+    line-height: 1.2;
+}
+
+.pre-approved-box ul {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.pre-approved-box ul li {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pre-approved-box ul li::before {
+    content: '✓';
+    color: var(--blue-mid);
+    font-weight: 900;
+    font-size: 15px;
+}
+
+/* Formulario DNI / Conocer */
+.form-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+    margin-bottom: 18px;
+}
+
+.form-row select {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: #fff;
+    cursor: pointer;
+    appearance: auto;
+}
+
+.form-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-dark);
+    transition: border-color .2s;
+}
+.form-row input:focus {
+    outline: none;
+    border-color: var(--blue-mid);
+}
+.form-row input::placeholder { color: #aab4c4; }
+
+/* Botón "Conocer" — ancho completo abajo del form */
+.pre-approved-box > button,
+.form-row button {
+    width: 100%;
+    padding: 13px;
+    background: var(--orange-bcp);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(249,115,22,.35);
+    transition: background .2s, transform .15s;
+    margin-top: 6px;
+}
+
+/* Hacemos que el botón esté fuera del form-row y sea ancho completo */
+.form-row { flex-wrap: wrap; }
+.form-row button {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: var(--radius-pill);
+}
+.form-row button:hover {
+    background: #ea6000;
+    transform: translateY(-1px);
+}
+
+/* Texto legal pequeño */
+.pre-approved-box p.legal {
+    font-size: 10.5px;
+    color: var(--text-gray);
+    line-height: 1.5;
+    margin-top: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   SECCIÓN NOVEDADES (etiqueta centrada)
+   ══════════════════════════════════════════════ */
+.novedades-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    padding: 30px 0 20px;
+    border-top: 1px solid var(--border);
+}
+
+/* ══════════════════════════════════════════════
+   BOTONES FLOTANTES (Abrir cuenta / Banca por Internet)
+   ══════════════════════════════════════════════ */
+.bottom-bar {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 200;
+}
+
+/* ── Chat flotante ── */
+.floating-chat {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    background: var(--orange-bcp);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(249,115,22,.5);
+    cursor: pointer;
+    z-index: 300;
+    transition: transform .2s, box-shadow .2s;
+}
+.floating-chat:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 22px rgba(249,115,22,.6);
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE  (tablet / móvil básico)
+   ══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .grid-layout { grid-template-columns: 1fr; }
+    .actions-grid { grid-template-columns: repeat(2, 1fr); }
+    .menu-links { display: none; }
+    .hero-text h1 { font-size: 26px; }
+    .orange-curve { width: 48%; right: -12%; }
+}
+
+@media (max-width: 580px) {
+    .nav-buttons .btn-outline,
+    .nav-buttons .btn-search { display: none; }
+    .hero { height: auto; padding: 40px 0; }
+    .orange-curve { display: none; }
+    .hero-text { width: 100%; }
+}
+
+.cuy-caption {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    background: rgba(0,0,0,0.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+.cuy-img {
+    position: relative;
+    z-index: 2;
+    width: 85%;
+    max-width: 340px;
+    object-fit: contain;
+}

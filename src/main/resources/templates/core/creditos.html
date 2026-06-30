@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP Core - Créditos</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="core-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/core/solicitudes" class="nav-item">📋 Solicitudes</a>
+        <a href="/core/creditos" class="nav-item active">💳 Créditos</a>
+        <a href="/core/clientes" class="nav-item">👥 Clientes</a>
+        <a href="/core/recuperaciones" class="nav-item">⚠️ Recuperaciones</a>
+        <a href="/core/reportes" class="nav-item">📈 Reportes</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">F</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Funcionario</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Cargo</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>Gestión de Créditos</h1>
+            <p>Cartera de créditos desembolsados y su estado actual</p>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div th:if="${#lists.isEmpty(creditos)}" class="empty-state">
+            No hay créditos registrados aún. Los créditos aparecen aquí cuando se aprueba una solicitud.
+        </div>
+
+        <table th:unless="${#lists.isEmpty(creditos)}" class="core-table">
+            <thead>
+            <tr>
+                <th>N° Crédito</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Monto Aprobado</th>
+                <th>Saldo Capital</th>
+                <th>Cuota Mensual</th>
+                <th>TEA</th>
+                <th>Plazo</th>
+                <th>Días Atraso</th>
+                <th>Estado</th>
+                <th>Próxima Cuota</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${creditos}">
+                <td th:text="${c.numeroCredito}"></td>
+                <td th:text="${c.cliente.nombreCompleto}"></td>
+                <td><span class="badge-tipo" th:text="${c.tipoCredito}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(c.montoAprobado,1,'COMMA',2,'POINT')}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(c.saldoCapital,1,'COMMA',2,'POINT')}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(c.cuotaMensual,1,'COMMA',2,'POINT')}"></span></td>
+                <td th:text="${c.tasaInteresAnual} + '%'"></td>
+                <td th:text="${c.plazoMeses} + ' meses'"></td>
+                <td>
+                        <span th:text="${c.diasAtraso}"
+                              th:style="${c.diasAtraso > 0} ? 'color:#dc2626;font-weight:800' : 'color:#16a34a;font-weight:700'">0</span>
+                </td>
+                <td>
+                        <span class="estado-badge"
+                              th:classappend="${c.estado == 'VIGENTE'} ? 'green' :
+                                             (${c.estado == 'CANCELADO'} ? 'blue' :
+                                             (${c.estado == 'ATRASADO'} ? 'red' :
+                                             (${c.estado == 'JUDICIAL'} ? 'red' : 'yellow')))"
+                              th:text="${c.estado}">
+                        </span>
+                </td>
+                <td th:text="${c.fechaProximaCuota != null ? #temporals.format(c.fechaProximaCuota,'dd/MM/yyyy') : '-'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

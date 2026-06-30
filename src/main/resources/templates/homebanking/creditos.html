@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Mis Créditos</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+<nav class="hb-nav">
+    <div class="hb-nav-logo"><span class="bcp-text">BCP</span><span class="orange-dot">></span></div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link active">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div><h1>Mis Créditos</h1><p>Estado de tus créditos y solicitudes</p></div>
+        <a href="/homebanking/creditos/solicitar" class="btn-primary">+ Solicitar crédito</a>
+    </div>
+    <div th:if="${mensaje}" class="alert-hb success" th:text="${mensaje}"></div>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Créditos Activos</h2></div>
+        <div th:if="${#lists.isEmpty(creditos)}" class="empty-state-hb">
+            No tienes créditos activos.
+            <a href="/homebanking/creditos/solicitar">Solicita tu primer crédito →</a>
+        </div>
+        <div class="creditos-grid" th:unless="${#lists.isEmpty(creditos)}">
+            <div th:each="cred : ${creditos}" class="credito-card-full">
+                <div class="credito-header">
+                    <span class="credito-tipo" th:text="${cred.tipoCredito}"></span>
+                    <span class="credito-estado"
+                          th:classappend="${cred.estado == 'VIGENTE'} ? 'green' :
+                                         (${cred.estado == 'ATRASADO'} ? 'red' : 'blue')"
+                          th:text="${cred.estado}"></span>
+                </div>
+                <div class="credito-numero" th:text="${cred.numeroCredito}"></div>
+                <div class="credito-details-grid">
+                    <div class="credito-detail">
+                        <span class="detail-l">Monto Aprobado</span>
+                        <span class="detail-v">S/ <span th:text="${#numbers.formatDecimal(cred.montoAprobado,1,'COMMA',2,'POINT')}"></span></span>
+                    </div>
+                    <div class="credito-detail">
+                        <span class="detail-l">Saldo Pendiente</span>
+                        <span class="detail-v highlight">S/ <span th:text="${#numbers.formatDecimal(cred.saldoCapital,1,'COMMA',2,'POINT')}"></span></span>
+                    </div>
+                    <div class="credito-detail">
+                        <span class="detail-l">Cuota Mensual</span>
+                        <span class="detail-v">S/ <span th:text="${#numbers.formatDecimal(cred.cuotaMensual,1,'COMMA',2,'POINT')}"></span></span>
+                    </div>
+                    <div class="credito-detail">
+                        <span class="detail-l">TEA</span>
+                        <span class="detail-v" th:text="${cred.tasaInteresAnual} + '%'"></span>
+                    </div>
+                    <div class="credito-detail">
+                        <span class="detail-l">Plazo</span>
+                        <span class="detail-v" th:text="${cred.plazoMeses} + ' meses'"></span>
+                    </div>
+                    <div class="credito-detail">
+                        <span class="detail-l">Próxima Cuota</span>
+                        <span class="detail-v" th:text="${cred.fechaProximaCuota != null ?
+                            #temporals.format(cred.fechaProximaCuota,'dd/MM/yyyy') : '-'}"></span>
+                    </div>
+                </div>
+                <div class="credito-mora" th:if="${cred.diasAtraso > 0}">
+                    ⚠️ <span th:text="${cred.diasAtraso}"></span> días de atraso
+                </div>
+                <a th:href="@{/homebanking/creditos/{id}/cronograma(id=${cred.id})}"
+                   class="btn-primary" style="font-size:12px;padding:6px 14px;margin-top:10px;display:inline-block">
+                    📅 Ver cronograma de pagos
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="hb-section">
+        <div class="section-header"><h2>Mis Solicitudes</h2></div>
+        <div th:if="${#lists.isEmpty(solicitudes)}" class="empty-state-hb">No has enviado solicitudes aún.</div>
+        <table th:unless="${#lists.isEmpty(solicitudes)}" class="table-hb">
+            <thead>
+            <tr>
+                <th>Tipo</th><th>Monto</th><th>Plazo</th><th>Scoring</th><th>Estado</th><th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sol : ${solicitudes}">
+                <td th:text="${sol.tipoCredito}"></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(sol.montoSolicitado,1,'COMMA',2,'POINT')}"></span></td>
+                <td th:text="${sol.plazoMeses} + ' meses'"></td>
+                <td>
+                        <span class="scoring-badge-hb"
+                              th:classappend="${sol.scoringClasificacion == 'EXCELENTE'} ? 'green' :
+                                             (${sol.scoringClasificacion == 'BUENO'} ? 'blue' :
+                                             (${sol.scoringClasificacion == 'REGULAR'} ? 'yellow' : 'red'))"
+                              th:text="${sol.scoringPuntaje} + ' - ' + ${sol.scoringClasificacion}">
+                        </span>
+                </td>
+                <td>
+                        <span class="estado-badge-hb"
+                              th:classappend="${sol.estado == 'APROBADO'} ? 'green' :
+                                             (${sol.estado == 'RECHAZADO'} ? 'red' :
+                                             (${sol.estado == 'PENDIENTE'} ? 'yellow' : 'blue'))"
+                              th:text="${sol.estado}">
+                        </span>
+                </td>
+                <td th:text="${#temporals.format(sol.fechaSolicitud,'dd/MM/yyyy')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

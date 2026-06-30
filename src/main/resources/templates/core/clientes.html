@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP Core - Clientes</title>
+    <link rel="stylesheet" th:href="@{/css/core.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="core-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="bcp-text">BCP</span><span class="orange-dot">></span>
+        <span class="sidebar-label">Core</span>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/core/dashboard" class="nav-item">📊 Dashboard</a>
+        <a href="/core/solicitudes" class="nav-item">📋 Solicitudes</a>
+        <a href="/core/creditos" class="nav-item">💳 Créditos</a>
+        <a href="/core/clientes" class="nav-item active">👥 Clientes</a>
+        <a href="/core/reportes" class="nav-item">📈 Reportes</a>
+        <a href="/core/recuperaciones" class="nav-item">⚠️ Recuperaciones</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar" th:text="${funcionario?.nombreCompleto?.substring(0,1)}">F</div>
+            <div>
+                <div class="user-name" th:text="${funcionario?.nombreCompleto}">Funcionario</div>
+                <div class="user-role" th:text="${funcionario?.cargo}">Cargo</div>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Cerrar sesión</a>
+    </div>
+</div>
+
+<main class="core-main">
+    <div class="core-header">
+        <div>
+            <h1>Gestión de Clientes</h1>
+            <p>Base de clientes registrados en el sistema</p>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div th:if="${#lists.isEmpty(clientes)}" class="empty-state">
+            No hay clientes registrados aún.
+        </div>
+        <table th:unless="${#lists.isEmpty(clientes)}" class="core-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Ingreso</th>
+                <th>Estado</th>
+                <th>Registro</th>
+                <th>Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td th:text="${c.id}"></td>
+                <td th:text="${c.nombreCompleto}"></td>
+                <td th:text="${c.dni}"></td>
+                <td th:text="${c.email}"></td>
+                <td th:text="${c.telefono}"></td>
+                <td>S/ <span th:text="${c.ingresoMensual != null ? #numbers.formatDecimal(c.ingresoMensual,1,'COMMA',2,'POINT') : '0.00'}"></span></td>
+                <td>
+                        <span class="estado-badge" th:classappend="${c.activo} ? 'green' : 'red'"
+                              th:text="${c.activo} ? 'Activo' : 'Inactivo'"></span>
+                </td>
+                <td th:text="${#temporals.format(c.fechaRegistro,'dd/MM/yyyy')}"></td>
+                <td>
+                    <a th:href="@{/core/clientes/{id}(id=${c.id})}" class="btn-revisar">Ver detalle</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

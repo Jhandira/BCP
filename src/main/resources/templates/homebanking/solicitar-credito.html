@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Solicitar Crédito</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+<nav class="hb-nav">
+    <div class="hb-nav-logo"><span class="bcp-text">BCP</span><span class="orange-dot">></span></div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link active">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div><h1>Solicitar Crédito</h1><p>Completa los datos para evaluar tu solicitud</p></div>
+        <a href="/homebanking/creditos" class="btn-back-hb">← Volver</a>
+    </div>
+    <section class="hb-section">
+        <div class="form-transfer-container wide">
+            <form th:action="@{/homebanking/creditos/solicitar}" method="post" class="form-hb">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <h3 class="form-section-title">Datos del Crédito</h3>
+                <div class="form-row-hb">
+                    <div class="form-group-hb">
+                        <label>Tipo de Crédito</label>
+                        <select name="tipoCredito" required>
+                            <option value="PERSONAL">Personal (TEA ~30%)</option>
+                            <option value="CONSUMO">Consumo (TEA ~35%)</option>
+                            <option value="HIPOTECARIO">Hipotecario (TEA ~9.5%)</option>
+                            <option value="MYPE">MYPE (TEA ~28%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group-hb">
+                        <label>Monto Solicitado (S/)</label>
+                        <input type="number" name="montoSolicitado" min="500" step="100" placeholder="Ej: 5000" required>
+                    </div>
+                </div>
+                <div class="form-row-hb">
+                    <div class="form-group-hb">
+                        <label>Plazo (meses)</label>
+                        <select name="plazoMeses" required>
+                            <option value="6">6 meses</option>
+                            <option value="12">12 meses</option>
+                            <option value="24">24 meses</option>
+                            <option value="36">36 meses</option>
+                            <option value="48">48 meses</option>
+                            <option value="60">60 meses</option>
+                            <option value="120">120 meses</option>
+                            <option value="180">180 meses</option>
+                            <option value="240">240 meses</option>
+                        </select>
+                    </div>
+                    <div class="form-group-hb">
+                        <label>Propósito del crédito</label>
+                        <input type="text" name="proposito" placeholder="Ej: Compra de equipo, viaje, etc.">
+                    </div>
+                </div>
+
+                <h3 class="form-section-title">Datos Laborales (para el scoring)</h3>
+                <div class="form-row-hb">
+                    <div class="form-group-hb">
+                        <label>Situación Laboral</label>
+                        <select name="situacionLaboral">
+                            <option value="">Seleccionar...</option>
+                            <option value="DEPENDIENTE" th:selected="${cliente.situacionLaboral == 'DEPENDIENTE'}">Dependiente (en planilla)</option>
+                            <option value="INDEPENDIENTE" th:selected="${cliente.situacionLaboral == 'INDEPENDIENTE'}">Independiente</option>
+                            <option value="PENSIONISTA" th:selected="${cliente.situacionLaboral == 'PENSIONISTA'}">Pensionista</option>
+                        </select>
+                    </div>
+                    <div class="form-group-hb">
+                        <label>Ingreso Mensual Neto (S/)</label>
+                        <input type="number" name="ingresoMensual" step="50" min="0"
+                               th:value="${cliente.ingresoMensual}" placeholder="Ej: 3500">
+                    </div>
+                </div>
+                <div class="form-group-hb">
+                    <label>Empleador / Empresa</label>
+                    <input type="text" name="empleador" th:value="${cliente.empleador}" placeholder="Nombre de tu empresa">
+                </div>
+
+                <div class="scoring-info-box">
+                    <h4>ℹ️ ¿Cómo funciona el scoring?</h4>
+                    <p>Tu puntaje se calcula automáticamente según:</p>
+                    <ul>
+                        <li>✅ Capacidad de pago (cuota vs ingreso mensual)</li>
+                        <li>✅ Situación laboral</li>
+                        <li>✅ Historial crediticio</li>
+                        <li>✅ Nivel de ingresos</li>
+                    </ul>
+                </div>
+                <button type="submit" class="btn-primary full-width">Enviar Solicitud</button>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

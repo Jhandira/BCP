@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BCP - Cronograma de Pagos</title>
+    <link rel="stylesheet" th:href="@{/css/homebanking.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="hb-body">
+
+<nav class="hb-nav">
+    <div class="hb-nav-logo"><span class="bcp-text">BCP</span><span class="orange-dot">></span></div>
+    <div class="hb-nav-links">
+        <a href="/homebanking/dashboard" class="hb-link">Inicio</a>
+        <a href="/homebanking/cuentas" class="hb-link">Cuentas</a>
+        <a href="/homebanking/transferencias" class="hb-link">Transferencias</a>
+        <a href="/homebanking/creditos" class="hb-link active">Créditos</a>
+    </div>
+    <div class="hb-nav-user">
+        <span class="user-greeting">Hola, <strong th:text="${cliente.nombreCompleto.split(' ')[0]}">Cliente</strong></span>
+        <a href="/logout" class="btn-logout-hb">Salir</a>
+    </div>
+</nav>
+
+<main class="hb-main">
+    <div class="hb-welcome">
+        <div>
+            <h1>Cronograma de Pagos</h1>
+            <p th:text="${credito.numeroCredito} + ' · ' + ${credito.tipoCredito}"></p>
+        </div>
+        <a href="/homebanking/creditos" class="btn-back-hb">← Volver</a>
+    </div>
+
+    <!-- Resumen del crédito -->
+    <section class="hb-section">
+        <div class="cuenta-resumen">
+            <div class="resumen-item">
+                <span class="resumen-label">Monto Aprobado</span>
+                <span class="resumen-value">S/ <span th:text="${#numbers.formatDecimal(credito.montoAprobado,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">Saldo Pendiente</span>
+                <span class="resumen-value">S/ <span th:text="${#numbers.formatDecimal(credito.saldoCapital,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">Cuota Mensual</span>
+                <span class="resumen-value">S/ <span th:text="${#numbers.formatDecimal(credito.cuotaMensual,1,'COMMA',2,'POINT')}"></span></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">TEA</span>
+                <span class="resumen-value" th:text="${credito.tasaInteresAnual} + '%'"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">Plazo</span>
+                <span class="resumen-value" th:text="${credito.plazoMeses} + ' meses'"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cronograma -->
+    <section class="hb-section">
+        <div class="section-header"><h2>Detalle de Cuotas</h2></div>
+
+        <div th:if="${#lists.isEmpty(cronograma)}" class="empty-state-hb">
+            El cronograma se generará cuando el crédito sea aprobado y desembolsado.
+        </div>
+
+        <table th:unless="${#lists.isEmpty(cronograma)}" class="table-hb">
+            <thead>
+            <tr>
+                <th>N° Cuota</th>
+                <th>Fecha Vencimiento</th>
+                <th>Cuota Total</th>
+                <th>Capital</th>
+                <th>Interés</th>
+                <th>Saldo Restante</th>
+                <th>Estado</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cuota : ${cronograma}"
+                th:classappend="${cuota.estado == 'PAGADO'} ? 'fila-pagada' :
+                                   (${cuota.estado == 'VENCIDO'} ? 'fila-vencida' : '')">
+                <td><strong th:text="${cuota.numeroCuota}"></strong></td>
+                <td th:text="${#temporals.format(cuota.fechaVencimiento,'dd/MM/yyyy')}"></td>
+                <td><strong>S/ <span th:text="${#numbers.formatDecimal(cuota.cuotaTotal,1,'COMMA',2,'POINT')}"></span></strong></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(cuota.capital,1,'COMMA',2,'POINT')}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(cuota.interes,1,'COMMA',2,'POINT')}"></span></td>
+                <td>S/ <span th:text="${#numbers.formatDecimal(cuota.saldoRestante,1,'COMMA',2,'POINT')}"></span></td>
+                <td>
+                        <span class="estado-badge-hb"
+                              th:classappend="${cuota.estado == 'PAGADO'} ? 'green' :
+                                             (${cuota.estado == 'VENCIDO'} ? 'red' : 'yellow')"
+                              th:text="${cuota.estado}">
+                        </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<style>
+    .fila-pagada td { opacity: 0.6; background: #f0fdf4; }
+    .fila-vencida td { background: #fef2f2; }
+</style>
+</body>
+</html>
