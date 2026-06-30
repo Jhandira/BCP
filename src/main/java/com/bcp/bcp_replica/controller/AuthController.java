@@ -30,7 +30,9 @@ public class AuthController {
     @Autowired private AuthenticationManager authenticationManager;
 
     @GetMapping("/")
-    public String index() { return "index"; }
+    public String index() {
+        return "redirect:/login";
+    }
 
     // ── LOGIN CLIENTES ──────────────────────────────────────
     @GetMapping("/login")
